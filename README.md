@@ -1,12 +1,10 @@
-# ST_Benchmarking_manuscript_codes
-
 <!-- Optional: uncomment and add a logo to img/logo.png
 <p align="center">
   <img src="img/logo.png" width="400" alt="Project logo">
 </p>
 -->
 
-<h1 align="center">PROJECT TITLE — fill in your paper's title here</h1>
+<h1 align="center">Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues </h1>
 
 ## Contents
 - [Introduction](#introduction)
@@ -24,7 +22,7 @@
      <p align="center"><img src="img/study_design.png" width="700" alt="Study design"></p>
 -->
 
-_Add your introduction here._
+The field of spatial transcriptomics has dramatically expanded over the past few years, with the popularisation of a plethora of commercial platforms driving the growth. However, to date, no independent studies have comparatively analysed these techniques to benchmark their performance. Here, we present a well-controlled direct comparison of three spatial transcriptomics platforms. We evaluate these methods with multiple quality metrics and provide recommendations for data analysis and methods selection. This resource will help researchers to choose the optimal multiplexed in situ imaging technologies and is valuable for the development of new analysis tools.  
 
 
 ## Data Availability
@@ -66,8 +64,5 @@ _Add your citation here._
 
 ## Acknowledgements
 
-<!-- TODO: funding, facilities, and contributors to acknowledge. -->
+We thank the WEHI Advanced Genomics Facility, Center for Dynamic Imaging and Advanced Histotechnology facility for supporting the generation and analysis of single-cell and spatial transcriptomics data for this project.
 
-_Add your acknowledgements here._
-
----
