@@ -6,12 +6,26 @@
 
 <h1 align="center">Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues </h1>
 
+# Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues
+
 ## Contents
-- [Introduction](#introduction)
-- [Data Availability](#data-availability)
-- [Workflows](#workflows)
-- [Citation](#citation)
-- [Acknowledgements](#acknowledgements)
+- [Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues](#cross-platform-spatial-transcriptomics-profiles-of-human-breast-tissues)
+  - [Contents](#contents)
+  - [Overview](#overview)
+  - [Introduction](#introduction)
+  - [Data Availability](#data-availability)
+  - [Analysis code](#analysis-code)
+    - [sc/snRNAseq](#scsnrnaseq)
+    - [Visium](#visium)
+    - [iST](#ist)
+  - [Citation](#citation)
+  - [Acknowledgements](#acknowledgements)
+
+## Overview
+
+This repository contains the code to reproduce the analysis in:
+
+Qin L*, Yip RKH*, et al. (2026). **Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues**.
 
 
 ## Introduction
@@ -39,18 +53,20 @@ _Add a sentence on where the dataset is deposited (e.g. GEO / ArrayExpress / Bio
 -->
 
 
-## Workflows
+## Analysis code
 
-The following analysis workflows are available in this repository. Each folder contains
-its own README with full usage instructions.
+### sc/snRNAseq
+_single-cell / single-nucleus RNA-seq reference analysis._
 
-- [**scRNAseq_analysis/**](scRNAseq_analysis/) — _single-cell / single-nucleus RNA-seq reference analysis._
-  <!-- TODO: one-paragraph summary, e.g. preprocessing, QC, normalisation, clustering,
-       cell type annotation, and the reference used for downstream spatial deconvolution. -->
+### Visium
 
-- [**iST_pipeline/**](iST_pipeline/) — _imaging-based spatial transcriptomics (Xenium / MERSCOPE) pipeline._
-  <!-- TODO: one-paragraph summary, e.g. object creation from raw platform output,
-       embedding and batch correction, cluster annotation, benchmarking, and figures. -->
+The code for Visium data analysis is in [`Visium`](Visium).
+
+### iST 
+
+_imaging-based spatial transcriptomics (Xenium / MERSCOPE) pipeline._
+
+The code for Xenium data analysis is in [`Xenium`](Xenium).
 
 
 ## Citation
@@ -59,7 +75,7 @@ its own README with full usage instructions.
 
 If you use this dataset or these workflows, please cite:
 
-_Add your citation here._
+Qin L*, Yip RKH*, et al. (2026). **Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues**.
 
 
 ## Acknowledgements
