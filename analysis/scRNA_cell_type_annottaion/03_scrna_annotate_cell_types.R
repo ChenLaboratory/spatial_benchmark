@@ -1,37 +1,5 @@
----
-title: "annotate scRNA-seq reference"
-author: "Lei Qin"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-output:
-  pdf_document:
-    number_sections: yes
-    keep_tex: no
-    keep_md: true
-    toc: yes
-fontsize: 10pt
-geometry: margin=1in
----
+# annotate scRNA-seq reference
 
-```{r style1, echo=FALSE, results='hide', message=FALSE, cache=FALSE}
-library(knitr)
-knitr::opts_chunk$set(
-  fig.width=7, fig.height=7,
-  fig.path='figure/',
-  fig.align='center',
-  out.width='90%',
-  error=FALSE, prompt=TRUE, comment=NA,
-  dpi=300, dev="png", dev.args=list(pointsize=15),
-  cache=TRUE,
-  cache.path="cache/",
-  echo=TRUE,
-  warning=FALSE,
-  message=FALSE)
-
-options(width=110, digits=3)
-pdf.options(useDingbats = TRUE)
-```
-
-```{r setup, include=FALSE}
 library(Seurat)
 library(RColorBrewer)
 library(magrittr)
@@ -67,23 +35,19 @@ ct_parent_groups <- list(
   Lymph.vessel = c("Lymph.vessel")
 )
 
-source("plot_dotplot.R")
-```
+source("../../../R/plot_dotplot.R")
 
+# ============================================================
 # MH0007
+# ============================================================
 
-```{r MH0007-load}
 seu_MH0007 <- readRDS("/vast/projects/Spatial/lei/Benchmarking/snRNA/MH0007/seu_MH0007.rds")
-```
 
-## Initial annotation — res 0.6
+## Initial annotation - res 0.6
+# Uncertain clusters:
+# - c2: mixture of Plasma, Basal, Fibroblast, Tumour -> assigned `unsure`
+# - c12: Pericyte / Basal / Fibroblast markers -> assigned `Epithelial`
 
-Uncertain clusters:
-
-- **c2**: mixture of Plasma, Basal, Fibroblast, Tumour → assigned `unsure`
-- **c12**: Pericyte / Basal / Fibroblast markers → assigned `Epithelial`
-
-```{r MH0007-annot06, fig.width=8, fig.height=7}
 seu_MH0007@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
   c("0", "1", "3", "5", "11") ~ "Tumor",   # supported by inferCNV
   "4"                          ~ "B.Plasma",
@@ -97,34 +61,25 @@ seu_MH0007@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
 ))
 
 DimPlot(seu_MH0007, group.by = "cell_type0.6", cols = cell_type_colors, label = TRUE)
-```
 
-## Higher resolution — res 1.2
+## Higher resolution - res 1.2
+# Reason: distinguish Pericyte from Endothelial.
 
-Reason: distinguish Pericyte from Endothelial.
-
-```{r MH0007-cluster12, fig.width=8, fig.height=7}
 seu_MH0007 <- FindClusters(seu_MH0007, resolution = 1.2, verbose = FALSE)
 DimPlot(seu_MH0007, group.by = "RNA_snn_res.1.2",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r MH0007-dot12, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu_MH0007, "MH0007", group_by = "RNA_snn_res.1.2")
-```
 
-```{r MH0007-annot12a, fig.width=8, fig.height=7}
 seu_MH0007@meta.data %<>% mutate(cell_type1.2 = case_when(
   RNA_snn_res.1.2 == "15" ~ "Pericyte",
   TRUE                     ~ cell_type0.6
 ))
 
 DimPlot(seu_MH0007, group.by = "cell_type1.2", cols = cell_type_colors, label = TRUE)
-```
 
-Full re-annotation at res 1.2:
+# Full re-annotation at res 1.2:
 
-```{r MH0007-annot12b, fig.width=8, fig.height=7}
 seu_MH0007@meta.data %<>% mutate(cell_type1.2 = case_match(RNA_snn_res.1.2,
   c("1", "2", "3", "5", "6", "7") ~ "Tumor",
   "10"                             ~ "T",
@@ -139,13 +94,10 @@ seu_MH0007@meta.data %<>% mutate(cell_type1.2 = case_match(RNA_snn_res.1.2,
 ))
 
 DimPlot(seu_MH0007, group.by = "cell_type1.2", cols = cell_type_colors, label = TRUE)
-```
 
 ## Subcluster B.Plasma (cluster 4 at res 1.2)
+# Attempting to separate B cells from Plasma. Result: subclustering failed to resolve a clean B population.
 
-Attempting to separate B cells from Plasma. Result: subclustering failed to resolve a clean B population.
-
-```{r MH0007-sub, fig.width=8, fig.height=7}
 Idents(seu_MH0007) <- seu_MH0007$RNA_snn_res.1.2
 
 seu_MH0007 <- FindSubCluster(
@@ -158,30 +110,22 @@ seu_MH0007 <- FindSubCluster(
 
 DimPlot(seu_MH0007, group.by = "subcluster",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r MH0007-sub-dot, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu_MH0007, "MH0007", group_by = "subcluster")
-```
 
 ## Save
 
-```{r MH0007-save}
 seu_MH0007$cell_type202605 <- seu_MH0007$cell_type1.2
 saveRDS(seu_MH0007, "/vast/projects/Spatial/lei/Benchmarking/snRNA/MH0007/seu_MH0007.rds")
-```
 
----
-
+# ============================================================
 # MH0026
+# ============================================================
 
-```{r MH0026-load}
 seu <- readRDS("/vast/projects/Spatial/lei/Benchmarking/snRNA/MH0026/seu_MH0026.rds")
-```
 
-## Initial annotation — res 0.6
+## Initial annotation - res 0.6
 
-```{r MH0026-annot06, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
   c("0", "1", "2", "5", "10", "11") ~ "Tumor",   # supported by inferCNV
   "4"                                ~ "Fibroblast",
@@ -195,23 +139,17 @@ seu@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
 ))
 
 DimPlot(seu, group.by = "cell_type0.6", cols = cell_type_colors, label = TRUE)
-```
 
-## Higher resolution — res 1.7
+## Higher resolution - res 1.7
+# Reason: attempt to distinguish Lymph.vessel from Endothelial, and Plasma from B cells.
+# Result: Endothelial splits into 2 clusters but both co-express Endothelial and Lymph.vessel markers; B/Plasma not resolved.
 
-Reason: attempt to distinguish Lymph.vessel from Endothelial, and Plasma from B cells.
-
-Result: Endothelial splits into 2 clusters but both co-express Endothelial and Lymph.vessel markers; B/Plasma not resolved.
-
-```{r MH0026-cluster17, fig.width=8, fig.height=7}
 seu <- FindClusters(seu, resolution = 1.7, verbose = FALSE)
 DimPlot(seu, group.by = "RNA_snn_res.1.7",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
 ## Subcluster Myeloid (cluster 6 at res 0.6)
 
-```{r MH0026-sub, fig.width=8, fig.height=7}
 Idents(seu) <- seu$RNA_snn_res.0.6
 
 seu <- FindSubCluster(
@@ -224,52 +162,38 @@ seu <- FindSubCluster(
 
 DimPlot(seu, group.by = "subcluster",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r MH0026-sub-dot, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu, "MH0026", group_by = "subcluster")
-```
 
-Subcluster 6_4 shows B cell markers → reassigned.
+# Subcluster 6_4 shows B cell markers -> reassigned.
 
-```{r MH0026-annot-sub, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.6 = case_when(
   subcluster == "6_4" ~ "B",
   TRUE                ~ cell_type0.6
 ))
 
 DimPlot(seu, group.by = "cell_type0.6", cols = cell_type_colors, label = TRUE)
-```
 
 ## Save
 
-```{r MH0026-save}
 seu$cell_type202605 <- seu$cell_type0.6
 saveRDS(seu, "/vast/projects/Spatial/lei/Benchmarking/snRNA/MH0026/seu_MH0026.rds")
-```
 
----
-
+# ============================================================
 # ER_0114
+# ============================================================
 
-```{r ER0114-load}
 seu <- readRDS("/vast/projects/Spatial/lei/Benchmarking/scRNA/ER_0114/seu_ER_0114.rds")
-```
 
-## Initial annotation — res 0.6
+## Initial annotation - res 0.6
+# Cluster notes:
+# - c3, c12: co-express Basal, Fibroblast, Pericyte markers -> assigned `Epithelial`
+# - c0, c1, c2, c4, c6, c10: Tumour / Epithelial markers
 
-Cluster notes:
-
-- **c3, c12**: co-express Basal, Fibroblast, Pericyte markers → assigned `Epithelial`
-- **c0, c1, c2, c4, c6, c10**: Tumour / Epithelial markers
-
-```{r ER0114-cluster06, fig.width=8, fig.height=7}
 seu <- FindClusters(seu, resolution = 0.6, verbose = FALSE)
 DimPlot(seu, group.by = "RNA_snn_res.0.6",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r ER0114-annot06, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
   # confident
   "9"                              ~ "Fibroblast",
@@ -284,11 +208,9 @@ seu@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
 ))
 
 DimPlot(seu, group.by = "cell_type0.6", cols = cell_type_colors, label = TRUE)
-```
 
 ## Subcluster Plasma (cluster 13 at res 0.6)
 
-```{r ER0114-sub, fig.width=8, fig.height=7}
 Idents(seu) <- seu$RNA_snn_res.0.6
 
 seu <- FindSubCluster(
@@ -301,45 +223,33 @@ seu <- FindSubCluster(
 
 DimPlot(seu, group.by = "subcluster",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r ER0114-sub-dot, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu, "ER0114", group_by = "subcluster")
-```
 
-Subcluster 13_0 shows B cell markers → reassigned.
+# Subcluster 13_0 shows B cell markers -> reassigned.
 
-```{r ER0114-annot-sub, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.6 = case_when(
   subcluster == "13_0" ~ "B",
   TRUE                  ~ cell_type0.6
 ))
 
 DimPlot(seu, group.by = "cell_type0.6", cols = cell_type_colors, label = TRUE)
-```
 
 ## Save
 
-```{r ER0114-save}
 seu$cell_type202605 <- seu$cell_type0.6
 saveRDS(seu, "/vast/projects/Spatial/lei/Benchmarking/scRNA/ER_0114/seu_ER_0114.rds")
-```
 
----
-
+# ============================================================
 # ER_0360
+# ============================================================
 
-```{r ER0360-load}
 seu <- readRDS("/vast/projects/Spatial/lei/Benchmarking/scRNA/ER_0360/seu_ER_0360.rds")
-```
 
-## Initial annotation — res 0.6
+## Initial annotation - res 0.6
+# Uncertain clusters:
+# - c14: mixed Plasma / Myeloid markers -> assigned `Myeloid`
 
-Uncertain clusters:
-
-- **c14**: mixed Plasma / Myeloid markers → assigned `Myeloid`
-
-```{r ER0360-annot06, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
   # confident
   c("2", "3", "8")   ~ "Tumor",
@@ -357,36 +267,26 @@ seu@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
 ))
 
 DimPlot(seu, group.by = "cell_type0.6", cols = cell_type_colors, label = TRUE)
-```
 
-```{r ER0360-dot06, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu, "ER0360", group_by = "RNA_snn_res.0.6")
-```
 
 ## Save
 
-```{r ER0360-save}
 seu$cell_type202605 <- seu$cell_type0.6
 saveRDS(seu, "/vast/projects/Spatial/lei/Benchmarking/scRNA/ER_0360/seu_ER_0360.rds")
-```
 
----
-
+# ============================================================
 # TN_0177
+# ============================================================
 
-```{r TN0177-load}
 seu <- readRDS("/vast/projects/Spatial/lei/Benchmarking/scRNA/TN_0177/seu_TN_0177.rds")
-```
 
-## Initial annotation — res 0.3
+## Initial annotation - res 0.3
+# Uncertain clusters:
+# - c9: co-express Pericyte / Fibroblast markers
+# - c13: co-express Basal / Fibroblast / Pericyte markers
+# - c14, c15: co-express Myeloid / Fibroblast / T markers
 
-Uncertain clusters:
-
-- **c9**: co-express Pericyte / Fibroblast markers
-- **c13**: co-express Basal / Fibroblast / Pericyte markers
-- **c14, c15**: co-express Myeloid / Fibroblast / T markers
-
-```{r TN0177-annot03, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.3 = case_match(RNA_snn_res.0.3,
   # confident
   "6"              ~ "Tumor",
@@ -403,36 +303,27 @@ seu@meta.data %<>% mutate(cell_type0.3 = case_match(RNA_snn_res.0.3,
 ))
 
 DimPlot(seu, group.by = "cell_type0.3", cols = cell_type_colors, label = TRUE)
-```
 
-## Higher resolution — res 0.6
+## Higher resolution - res 0.6
+# Reason: distinguish Pericyte from Fibroblast.
 
-Reason: distinguish Pericyte from Fibroblast.
-
-```{r TN0177-cluster06, fig.width=8, fig.height=7}
 seu <- FindClusters(seu, resolution = 0.6, verbose = FALSE)
 DimPlot(seu, group.by = "RNA_snn_res.0.6",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r TN0177-dot06, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu, "TN0177", group_by = "RNA_snn_res.0.6")
-```
 
-Cluster 18 at res 0.6 shows Pericyte markers:
+# Cluster 18 at res 0.6 shows Pericyte markers:
 
-```{r TN0177-annot06a, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.6 = case_when(
   RNA_snn_res.0.6 == "18" ~ "Pericyte",
   TRUE                     ~ cell_type0.3
 ))
 
 DimPlot(seu, group.by = "cell_type0.6", cols = cell_type_colors, label = TRUE)
-```
 
-Full re-annotation at res 0.6:
+# Full re-annotation at res 0.6:
 
-```{r TN0177-annot06b, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
   # confident
   "7"                          ~ "Tumor",
@@ -447,27 +338,19 @@ seu@meta.data %<>% mutate(cell_type0.6 = case_match(RNA_snn_res.0.6,
 ))
 
 DimPlot(seu, group.by = "cell_type0.6", cols = cell_type_colors, label = TRUE)
-```
 
-## Higher resolution — res 2.5
+## Higher resolution - res 2.5
+# Reason: look for Adipocytes. Result: cluster 12 (Endothelial/Adipocyte) did not split cleanly.
 
-Reason: look for Adipocytes. Result: cluster 12 (Endothelial/Adipocyte) did not split cleanly.
-
-```{r TN0177-cluster25, fig.width=8, fig.height=7}
 seu <- FindClusters(seu, resolution = 2.5, verbose = FALSE)
 DimPlot(seu, group.by = "RNA_snn_res.2.5",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r TN0177-dot25, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu, "TN0177", group_by = "RNA_snn_res.2.5")
-```
 
 ## Subcluster Endothelial (cluster 13 at res 0.6)
+# Reason: attempt to separate Adipocytes from Endothelial. Result: Adipocyte markers not resolved from Endothelial.
 
-Reason: attempt to separate Adipocytes from Endothelial. Result: Adipocyte markers not resolved from Endothelial.
-
-```{r TN0177-sub, fig.width=8, fig.height=7}
 Idents(seu) <- seu$RNA_snn_res.0.6
 
 seu <- FindSubCluster(
@@ -480,34 +363,24 @@ seu <- FindSubCluster(
 
 DimPlot(seu, group.by = "subcluster",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r TN0177-sub-dot, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu, "TN0177", group_by = "subcluster")
-```
 
 ## Save
 
-```{r TN0177-save}
 seu$cell_type202605 <- seu$cell_type0.6
 saveRDS(seu, "/vast/projects/Spatial/lei/Benchmarking/scRNA/TN_0177/seu_TN_0177.rds")
-```
 
----
-
+# ============================================================
 # TN_0554
+# ============================================================
 
-```{r TN0554-load}
 seu <- readRDS("/vast/projects/Spatial/lei/Benchmarking/scRNA/TN_0554/seu_TN_0554.rds")
-```
 
-## Initial annotation — res 0.3
+## Initial annotation - res 0.3
+# Uncertain clusters:
+# - c13: Endothelial with Adipocyte co-expression
 
-Uncertain clusters:
-
-- **c13**: Endothelial with Adipocyte co-expression
-
-```{r TN0554-annot03, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.3 = case_match(RNA_snn_res.0.3,
   # confident
   c("1", "4")        ~ "Tumor",
@@ -522,35 +395,26 @@ seu@meta.data %<>% mutate(cell_type0.3 = case_match(RNA_snn_res.0.3,
 ))
 
 DimPlot(seu, group.by = "cell_type0.3", cols = cell_type_colors, label = TRUE)
-```
 
-## Higher resolution — res 0.7
+## Higher resolution - res 0.7
+# Reason: distinguish Pericyte from other stromal populations.
 
-Reason: distinguish Pericyte from other stromal populations.
-
-```{r TN0554-cluster07, fig.width=8, fig.height=7}
 DimPlot(seu, group.by = "RNA_snn_res.0.7",
         reduction = "umap", label = TRUE, repel = TRUE, pt.size = 0.5)
-```
 
-```{r TN0554-dot07, fig.width=14, fig.height=24, out.width='100%'}
 plot_marker_dotplot(seu, "TN0554", group_by = "RNA_snn_res.0.7")
-```
 
-Cluster 17 at res 0.7 shows Pericyte markers:
+# Cluster 17 at res 0.7 shows Pericyte markers:
 
-```{r TN0554-annot07a, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.7 = case_when(
   RNA_snn_res.0.7 == "17" ~ "Pericyte",
   TRUE                     ~ cell_type0.3
 ))
 
 DimPlot(seu, group.by = "cell_type0.7", cols = cell_type_colors, label = TRUE)
-```
 
-Full re-annotation at res 0.7:
+# Full re-annotation at res 0.7:
 
-```{r TN0554-annot07b, fig.width=8, fig.height=7}
 seu@meta.data %<>% mutate(cell_type0.7 = case_match(RNA_snn_res.0.7,
   # confident
   c("1", "3", "12")          ~ "Tumor",
@@ -566,11 +430,8 @@ seu@meta.data %<>% mutate(cell_type0.7 = case_match(RNA_snn_res.0.7,
 ))
 
 DimPlot(seu, group.by = "cell_type0.7", cols = cell_type_colors, label = TRUE)
-```
 
 ## Save
 
-```{r TN0554-save}
 seu$cell_type202605 <- seu$cell_type0.7
 saveRDS(seu, "/vast/projects/Spatial/lei/Benchmarking/scRNA/TN_0554/seu_TN_0554.rds")
-```

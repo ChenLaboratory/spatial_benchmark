@@ -14,10 +14,7 @@
   - [Overview](#overview)
   - [Introduction](#introduction)
   - [Data Availability](#data-availability)
-  - [Analysis code](#analysis-code)
-    - [sc/snRNAseq](#scsnrnaseq)
-    - [Visium](#visium)
-    - [iST](#ist)
+  - [Repository structure](#repository-structure)
   - [Citation](#citation)
   - [Acknowledgements](#acknowledgements)
 
@@ -53,20 +50,19 @@ _Add a sentence on where the dataset is deposited (e.g. GEO / ArrayExpress / Bio
 -->
 
 
-## Analysis code
+## Repository structure
 
-### sc/snRNAseq
-_single-cell / single-nucleus RNA-seq reference analysis._
+```
+R/              shared helper functions, sourced at the top of scripts
+preprocessing/  run-once, platform-specific loading/QC/clustering (Visium, Xenium/MERSCOPE, sc/snRNA-seq)
+analysis/       platform-agnostic/cross-platform analysis, writes result tables (FICTURE, ST alignment, ...)
+figures/        one folder per manuscript figure, reads from results/ and data/processed/
+data/           raw/ and processed/ data (gitignored — not tracked in this repo)
+results/        tables/ and figures/ written by analysis/ and figures/ (gitignored)
+```
 
-### Visium
-
-The code for Visium data analysis is in [`Visium`](Visium).
-
-### iST 
-
-_imaging-based spatial transcriptomics (Xenium / MERSCOPE) pipeline._
-
-The code for Xenium data analysis is in [`Xenium`](Xenium).
+See the `README.md` inside `preprocessing/` and `analysis/` for what each script does, its inputs/outputs,
+and any sample-specific parameters.
 
 
 ## Citation
