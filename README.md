@@ -4,9 +4,7 @@
 </p>
 -->
 
-%<h1 align="center">Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tumours </h1>
-
-# Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tumours
+<h1 align="center">Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tumours </h1>
 
 ## Contents
 - [Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues](#cross-platform-spatial-transcriptomics-profiles-of-human-breast-tissues)
