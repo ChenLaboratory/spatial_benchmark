@@ -6,7 +6,7 @@
 
 <h1 align="center">Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues </h1>
 
-# Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues
+# Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tumours
 
 ## Contents
 - [Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues](#cross-platform-spatial-transcriptomics-profiles-of-human-breast-tissues)
@@ -22,7 +22,7 @@
 
 This repository contains the code to reproduce the analysis in:
 
-Qin L*, Yip RKH*, et al. (2026). **Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tissues**.
+Qin L*, Yip RKH*, et al. (2026). **Cross-Platform Spatial Transcriptomics Profiles of Human Breast Tumours**.
 
 
 ## Introduction
