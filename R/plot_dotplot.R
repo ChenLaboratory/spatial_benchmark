@@ -1,3 +1,12 @@
+# Purpose:  Marker gene reference and dot plot helpers used when annotating cell types.
+#           Loads the marker table, appends markers it does not cover, defines the cell
+#           type ranking, and provides plot_marker_dotplot() (annotation-time marker
+#           inspection) and plot_manuscript_dotplot() (a fixed gene panel). Not run
+#           directly: sourced by ../preprocessing/scRNA/03_annotate_cell_types.R.
+# Inputs:   HsMarkers.txt   marker gene table, read at source time — its path is
+#                           hardcoded below and must be edited before sourcing
+# Outputs:  none (defines objects and functions in the calling environment)
+
 # ============================================================================
 # Load marker genes and define cell type ranking
 # ============================================================================

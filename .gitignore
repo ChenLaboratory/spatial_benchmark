@@ -1,3 +1,16 @@
-# Large/derived data — not tracked in git
-data/
-results/
+# Data and results are not tracked in this repository.
+# Raw data is available from GEO (GSE341352); everything else is regenerated
+# by the scripts here. Point the path variables in config.R at your own local
+# locations -- no other script needs editing.
+*.rds
+*.h5ad
+*.csv.gz
+*.parquet
+*.pdf
+*.png
+.Rhistory
+.RData
+.Rproj.user/
+__pycache__/
+.ipynb_checkpoints/
+.vscode/
