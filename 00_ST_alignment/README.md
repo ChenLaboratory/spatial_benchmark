@@ -1,9 +1,4 @@
-# Integration
-
-Stage 2: bring the platforms into a **shared coordinate space**. Unlike
-[`../01_preprocessing`](../01_preprocessing), which handles one platform at a time, everything here
-operates on several platforms at once, and everything in [`../02_analysis`](../02_analysis) that compares
-platforms depends on its output.
+# Alignment across ST platforms
 
 ```
 01_STalign_iST_to_Visium.py   register Xenium/MERSCOPE cells onto the matched Visium H&E image
@@ -11,12 +6,15 @@ platforms depends on its output.
 03_build_aligned_objects.R    join the alignment onto the Seurat objects; build the overlapped region
 ```
 
-Run 01 and 02 in the `stalign` conda/micromamba environment (`STalign`, `torch`,
-`opencv-python`). Set the paths in the block at the top of each script — see the
-[root README](../README.md#workflows).
+**How the three scripts are run.** `01` and `02` together are the pipeline for a *single
+alignment* — one iST dataset onto its matched Visium section, within one sample. They are run
+individually, once per iST–Visium pair, because landmark pairs picked by hand for
+that specific pair.
 
-Sample IDs below are the manuscript IDs, which are also the GEO IDs and the IDs used in filenames;
-they are listed in the [root README](../README.md#samples).
+`03` runs **once, across every alignment**, collecting all the per-pair outputs
+into the cross-platform Seurat object lists and the overlapped region. Run it only after `01` and
+`02` have been completed for every pair.
+
 
 ---
 
@@ -49,8 +47,9 @@ LDDMM).
 
 Computes hexagon-shaped bins matching the Visium spot grid geometry (from `tissue_positions.csv` /
 `scalefactors_json.json`), then assigns each aligned iST cell to the Visium spot barcode whose
-hexagon it falls inside. The 110 µm hexagon matches the Visium spot centre-to-centre distance, so
-all three platforms can be compared at matched spatial units.
+hexagon it falls inside. 
+
+**Input**
 
 ```bash
 python 02_hexbin.py <sample> <iST_type> <aligned_fname>
@@ -85,6 +84,15 @@ alignment QC metrics attached to each Visium spot and iST cell.
 | `02_hexbin.py` output | `<sample>_<platform>_hexbin.csv.gz` |
 | Xenium/MERSCOPE gene panel design files | used to compute the shared gene set across all three platforms |
 
+**Output**
+
+| File | Contents |
+|------|----------|
+| `raw_data_list_AllSample.rds` | `list(sample -> list(Visium, Xenium, MERSCOPE))`, unfiltered objects + QC metrics above |
+| `overlapped_data_list_AllSample.rds` | Same structure, built from the QC-filtered join, subset to the common overlapped spatial region |
+| `shared_genes_iST.rds` | Genes shared by the Xenium and MERSCOPE panels |
+| `shared_genes_withVisium.rds` | The 213-gene panel shared across all three platforms |
+
 **What it does**
 
 1. **Raw data** — for each sample and platform, joins the hexbin alignment onto the *unfiltered*
@@ -114,12 +122,3 @@ alignment QC metrics attached to each Visium spot and iST cell.
 | `Visium_spot_id` | Hexbin/Visium spot this cell was assigned to (empty if unassigned) |
 | `aligned_spatial` DimReduc | Cell coordinates in the aligned Visium image space |
 | `aligned_x`, `aligned_y`, `aligned_x_in_fullres`, `aligned_y_in_fullres`, `aligned` DimReduc | Same, recomputed for the overlapped-region subset (overlapped data only) |
-
-**Output**
-
-| File | Contents |
-|------|----------|
-| `raw_data_list_AllSample.rds` | `list(sample -> list(Visium, Xenium, MERSCOPE))`, unfiltered objects + QC metrics above |
-| `overlapped_data_list_AllSample.rds` | Same structure, built from the QC-filtered join, subset to the common overlapped spatial region |
-| `shared_genes_iST.rds` | Genes shared by the Xenium and MERSCOPE panels |
-| `shared_genes_withVisium.rds` | The 213-gene panel shared across all three platforms |

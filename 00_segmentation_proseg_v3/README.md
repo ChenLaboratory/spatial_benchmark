@@ -1,18 +1,8 @@
-# Proseg (v3) segmentation
+# Proseg (v3) segmentation pipeline
 
-Alternative cell segmentation for Xenium and MERSCOPE. Takes the same raw transcripts as
-[`../01_preprocessing/iST`](../01_preprocessing/iST) and produces the same artifact, so the three
-segmentations are directly comparable:
-
-| Method | Where it lives |
-|--------|----------------|
-| **Default** (vendor) | [`../01_preprocessing/iST/01_preprocess_iST.R`](../01_preprocessing/iST/01_preprocess_iST.R) |
-| **Baysor** | [`../00_segmentation_baysor`](../00_segmentation_baysor) |
-| **Proseg v3** | this folder |
-
-The metrics comparing them are in
-[`../02_analysis/04_segmentation_metrics`](../02_analysis/04_segmentation_metrics), feeding
-[`../03_figures/Fig4_segmentation.R`](../03_figures/Fig4_segmentation.R).
+Run **once per sample per platform** — there is no batch loop. Fill in the placeholder variables
+at the top of each script (or copy it per sample) and run it from that sample's own working
+directory.
 
 ```
 01_run_proseg_xenium.sh       segmentation (Xenium)
@@ -23,14 +13,7 @@ generate_seu.R                Seurat-conversion logic
 zarr_to_h5ad.py / zarr_cell_area_2d.py   utility, called by 02 / 03
 ```
 
-Numbered scripts are the ones you run; the `.py` and `generate_seu.R` files are called by them,
-not run directly.
-
-## Pipeline
-
-Run **once per sample per platform** — there is no batch loop. Fill in the placeholder variables
-at the top of each script (or copy it per sample) and run it from that sample's own working
-directory.
+Numbered scripts are the ones to run.
 
 1. **Segmentation** — `01_run_proseg_<platform>.sh` on that sample's raw transcripts.
 2. **Seurat conversion** — `02_run_proseg_to_seu.sh` in the same working directory, giving
@@ -48,15 +31,6 @@ directory.
 **Output:** `<processed_data_dir>/segmentation/proseg_v3/<platform>/<sample>_so.rds`, with
 `processed_data_dir` set in [`../config.R`](../config.R).
 
-## Notes
-
-- **Sample coverage:** Xenium for TNBC_01–04 and ER_01/ER_02; MERSCOPE for the same set minus
-  TNBC_04, whose MERSCOPE run is not part of the benchmarking cohort. Sample IDs are the
-  manuscript IDs — see the [root README](../README.md#samples).
-- Step 4 duplicates the SingleR transfer in
-  [`../01_preprocessing/iST/02_annotate_iST.R`](../01_preprocessing/iST/02_annotate_iST.R),
-  deliberately, so each arm runs end to end independently. Change the annotation procedure in
-  both or neither.
-- **Viewer-import steps are intentionally excluded**, as is a legacy Proseg v1/v2 workflow that
-  this version supersedes. Neither fed the analysis, so only the steps producing the analysed
-  Seurat object are included here.
+**Sample coverage:** Xenium for TNBC_01–04 and ER_01/ER_02. MERSCOPE for the five
+benchmarking-cohort datasets only — TNBC_01 and TNBC_02 on the V1 instrument, TNBC_03, ER_01 and
+ER_02 on V2. TNBC_04's MERSCOPE run is excluded for poor quality.
