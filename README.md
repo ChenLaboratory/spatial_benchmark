@@ -31,7 +31,7 @@ The field of spatial transcriptomics has dramatically expanded over the past few
 ## Data Availability
 
 The raw sequencing and ST data have been deposited in the Gene Expression Omnibus (GEO) under the
-accession number [GSE341352].
+accession number [GSE344378].
 
 
 | Manuscript ID | sc/snRNA | Visium | Xenium | MERSCOPE V1 | MERSCOPE V2 |
